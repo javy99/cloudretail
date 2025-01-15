@@ -1,6 +1,7 @@
 import express from 'express';
-import { HttpError } from './http';
-import { tokensRouter } from './routers/tokens';
+import { ZodError } from 'zod';
+import { createToken } from './routers/tokens/createToken';
+import { HttpError } from './exceptions';
 
 export const app = express();
 app.use(
@@ -22,17 +23,23 @@ app.get('/', (_request, response) => {
   response.status(200).json({ status: 'ok' });
 });
 
-app.use('/tokens', tokensRouter);
+app[createToken.method](createToken.path, createToken.handler);
 
 app.use(
   (
     error: unknown,
-    request: express.Request,
+    _request: express.Request,
     response: express.Response,
     _next: express.NextFunction,
   ) => {
+    console.log(error);
+
     if (error instanceof HttpError) {
       response.status(error.status).json({ error: error.message });
+    }
+
+    if (error instanceof ZodError) {
+      response.status(422).json({ error: error.errors });
     }
 
     response.status(500).json({ error: 'Something went wrong' });

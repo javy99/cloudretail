@@ -1,8 +1,28 @@
-export class HttpError extends Error {
+import express from 'express';
+import zod from 'zod';
+
+export class HttpResponse<Body> {
   constructor(
     public readonly status: number,
-    message: string,
-  ) {
-    super(message);
-  }
+    public readonly body: Body,
+  ) {}
 }
+
+type CreateHandlerOptions<RequestBody, ResponseBody> = {
+  bodySchema: zod.ZodSchema<RequestBody>;
+  process: (params: {
+    body: RequestBody;
+  }) => Promise<HttpResponse<ResponseBody>>;
+};
+
+export const createHandler = <RequestBody, ResponseBody>({
+  bodySchema,
+  process,
+}: CreateHandlerOptions<RequestBody, ResponseBody>): express.RequestHandler => {
+  return async (request, response) => {
+    const { status, body } = await process({
+      body: bodySchema.parse(request.body),
+    });
+    response.status(status).json(body);
+  };
+};
