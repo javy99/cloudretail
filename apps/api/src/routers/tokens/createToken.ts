@@ -5,10 +5,10 @@ import { tokenDao } from '../../daos/tokens';
 import { userDao } from '../../daos/users';
 import { HttpError } from '../../exceptions';
 import { createHandler, createRoute, Fetcher, HttpResponse } from '../../http';
+import { createTokenEndpoint } from '../../endpoints';
 
 export const createToken = createRoute({
-  method: 'post',
-  path: '/tokens',
+  endpoint: createTokenEndpoint,
   handler: createHandler({
     bodySchema: zod.object({
       username: zod.string(),
