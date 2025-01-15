@@ -31,6 +31,23 @@ export const createHandler = <RequestParams, RequestBody, ResponseBody>({
   };
 };
 
+export const createRoute = <RequestParams, RequestBody, ResponseBody>(
+  route: Route<RequestParams, RequestBody, ResponseBody>,
+) => route;
+
+export type Route<RequestParams, RequestBody, ResponseBody> = {
+  method: 'get' | 'post' | 'put' | 'delete';
+  path: string;
+  handler: express.RequestHandler<RequestParams, ResponseBody, RequestBody>;
+};
+
+export const registerRoute = <RequestParams, RequestBody, ResponseBody>(
+  router: express.Router,
+  route: Route<RequestParams, RequestBody, ResponseBody>,
+) => {
+  router[route.method](route.path, route.handler);
+};
+
 export type Fetcher<Handler> =
   Handler extends express.RequestHandler<
     infer RequestParams,

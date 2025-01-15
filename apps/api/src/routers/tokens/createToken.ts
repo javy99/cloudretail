@@ -4,10 +4,10 @@ import { pool } from '../../pool';
 import { tokenDao } from '../../daos/tokens';
 import { userDao } from '../../daos/users';
 import { HttpError } from '../../exceptions';
-import { createHandler, Fetcher, HttpResponse } from '../../http';
+import { createHandler, createRoute, Fetcher, HttpResponse } from '../../http';
 
-export const createToken = {
-  method: 'post' as const,
+export const createToken = createRoute({
+  method: 'post',
   path: '/tokens',
   handler: createHandler({
     bodySchema: zod.object({
@@ -30,6 +30,6 @@ export const createToken = {
       return new HttpResponse(201, token);
     },
   }),
-};
+});
 
 export type CreateTokenFetcher = Fetcher<typeof createToken.handler>;
