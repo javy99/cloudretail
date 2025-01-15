@@ -15,10 +15,14 @@ type CreateHandlerOptions<RequestBody, ResponseBody> = {
   }) => Promise<HttpResponse<ResponseBody>>;
 };
 
-export const createHandler = <RequestBody, ResponseBody>({
+export const createHandler = <RequestParams, RequestBody, ResponseBody>({
   bodySchema,
   process,
-}: CreateHandlerOptions<RequestBody, ResponseBody>): express.RequestHandler => {
+}: CreateHandlerOptions<RequestBody, ResponseBody>): express.RequestHandler<
+  RequestParams,
+  ResponseBody,
+  RequestBody
+> => {
   return async (request, response) => {
     const { status, body } = await process({
       body: bodySchema.parse(request.body),
